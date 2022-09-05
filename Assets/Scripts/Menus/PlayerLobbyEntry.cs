@@ -9,7 +9,7 @@ using ExitGames.Client.Photon;
 
 namespace Tanks
 {
-    public class PlayerLobbyEntry : MonoBehaviour
+    public class PlayerLobbyEntry : MonoBehaviourPunCallbacks
     {
         [SerializeField] private Button readyButton;
         [SerializeField] private GameObject readyText;
@@ -53,20 +53,30 @@ namespace Tanks
             if (IsLocalPlayer)
             {
                 PlayerTeam = (player.ActorNumber - 1) % PhotonNetwork.CurrentRoom.MaxPlayers;
+                player.NickName = PlayerPrefs.GetString("PlayerName");
             }
 
             playerName.text = player.NickName;
 
-            if (!IsLocalPlayer)
+            if (IsLocalPlayer)
+            {
+                PlayerTeam = (player.ActorNumber - 1) % PhotonNetwork.CurrentRoom.MaxPlayers;
+                player.NickName = PlayerPrefs.GetString("PlayerName");
+            }
+            else
+            {
                 Destroy(changeTeamButton);
+            }
 
+            playerName.text = player.NickName;
             UpdateVisuals();
         }
 
+      
         public void UpdateVisuals()
         {
             teamHolder.sprite = teamBackgrounds[PlayerTeam];
-
+            playerName.text = player.NickName;
             waitingText.SetActive(!IsPlayerReady);
             readyText.SetActive(IsPlayerReady);
         }
@@ -83,9 +93,21 @@ namespace Tanks
 
         private void OnChangeTeamButtonClicked()
         {
-            // TODO(DONE): Change player team
-            PlayerTeam = (PlayerTeam + 1) % PhotonNetwork.CurrentRoom.MaxPlayers;
+            bool changed = false;
+            int tryTeam = (PlayerTeam + 1) % PhotonNetwork.CurrentRoom.MaxPlayers;
+            var entries = FindObjectsOfType<PlayerLobbyEntry>();
 
+            while (!changed)
+            {
+                tryTeam = (tryTeam + 1) % PhotonNetwork.CurrentRoom.MaxPlayers;
+                var trySprite = teamBackgrounds[tryTeam];
+                foreach(var entry in entries)
+                {
+                    changed = !(entry.teamHolder.sprite == trySprite) || tryTeam == PlayerTeam;
+                }
+            }
+
+            PlayerTeam = tryTeam;
         }
 
         private void OnReadyButtonClick(bool isReady)
@@ -97,5 +119,6 @@ namespace Tanks
 
             IsPlayerReady = isReady;
         }
+
     }
 }

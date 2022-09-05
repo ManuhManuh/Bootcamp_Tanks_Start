@@ -13,10 +13,11 @@ namespace Tanks
         private GameObject canvasGameObject;
 
         private Player player;
-        private PhotonView photonView;
 
-        // TODO: Get player nickname
-        public string ColoredPlayerName => $"<color=#{ColorUtility.ToHtmlStringRGB(teamConfig.color)}>Nickname</color>";
+        public PhotonView photonView;
+
+        // TODO(DONE): Get player nickname
+        public string ColoredPlayerName => $"<color=#{ColorUtility.ToHtmlStringRGB(teamConfig.color)}>{player.NickName}</color>";
         public int Wins { get; set; }
 
         [PunRPC]
@@ -32,7 +33,7 @@ namespace Tanks
 
             // TODO(DONE): Get team from photon
             player = photonView.Owner;
-            teamConfig = FindObjectOfType<GameManager>().RegisterTank(this, 1);
+            teamConfig = FindObjectOfType<GameManager>().RegisterTank(this, (int)player.CustomProperties["Team"]);
 
             SetupRenderers();
         }

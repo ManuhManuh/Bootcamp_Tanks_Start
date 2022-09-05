@@ -1,3 +1,5 @@
+using Photon.Pun;
+using Photon.Realtime;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,6 +10,8 @@ namespace Tanks
 {
     public class CreateLobbyPopup : MonoBehaviourPunCallbacks
     {
+        public TypedLobby privateLobby;
+
         [SerializeField] private TMP_InputField lobbyNameInput;
 
         [SerializeField] private Button enablePrivateLobbyButton;
@@ -16,6 +20,7 @@ namespace Tanks
         [SerializeField] private Button closeButton;
 
         private bool IsPrivate => disablePrivateLobbyButton.gameObject.activeSelf;
+        
 
         private void OnCreateButtonClicked()
         {
@@ -42,6 +47,8 @@ namespace Tanks
 
         public override void OnEnable()
         {
+            base.OnEnable();
+
             lobbyNameInput.text = string.Empty;
             lobbyNameInput.Select();
             lobbyNameInput.ActivateInputField();

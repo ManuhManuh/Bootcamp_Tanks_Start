@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
+using TMPro;
 
 namespace Tanks
 {
@@ -14,6 +15,8 @@ namespace Tanks
         [SerializeField] private Button lobbyButton;
         [SerializeField] private Button settingsButton;
         [SerializeField] private SettingsController settingsPopup;
+        [SerializeField] private byte maxPlayersInRoom = 4;
+        [SerializeField] TextMeshProUGUI connectingText;
 
         private Action pendingAction;
 
@@ -53,8 +56,7 @@ namespace Tanks
 
         public void JoinRandomRoom()
         {
-            // TODO(DONE): Connect to a random room
-            RoomOptions roomOptions = new RoomOptions { IsOpen = true, MaxPlayers = 4};
+            RoomOptions roomOptions = new RoomOptions{ IsOpen = true, MaxPlayers = maxPlayersInRoom };
             PhotonNetwork.JoinRandomOrCreateRoom(roomOptions: roomOptions);
         }
 

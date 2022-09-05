@@ -1,3 +1,8 @@
+using ExitGames.Client.Photon;
+using Photon.Pun;
+using Photon.Realtime;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -21,7 +26,6 @@ namespace Tanks
         private Dictionary<Player, PlayerLobbyEntry> lobbyEntries;
 
         private bool IsEveryPlayerReady => lobbyEntries.Values.ToList().TrueForAll(entry => entry.IsPlayerReady);
-
         private void AddLobbyEntry(Player player)
         {
             var entry = Instantiate(playerLobbyEntryPrefab, entriesHolder);
@@ -50,21 +54,21 @@ namespace Tanks
             }
         }
 
-        public override void OnPlayerEnteredRoom(Player newPlayer)
+        // add lobby and start button updates for entering and exiting
+        public override void OnPlayerEnteredRoom(Player otherPlayer)
         {
-        
-            AddLobbyEntry(newPlayer);
+            AddLobbyEntry(otherPlayer);
             UpdateStartButton();
-
         }
 
         public override void OnPlayerLeftRoom(Player otherPlayer)
         {
-            Destroy(lobbyEntries[otherPlayer].gameObject);
+            Destroy(lobbyEntries[otherPlayer]);
             lobbyEntries.Remove(otherPlayer);
             UpdateStartButton();
         }
 
+        // update changes to player properties
         public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
         {
             lobbyEntries[targetPlayer].UpdateVisuals();
